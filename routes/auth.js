@@ -1,28 +1,64 @@
-import express from 'express';
-import dotenv from 'dotenv';
-import mysql from 'mysql2';
-import config from 'config';
+import express, { json } from "express";
+import dotenv from "dotenv";
+import mysql from "mysql2";
+import md5 from "md5";
+import jwt from "jsonwebtoken";
 
 dotenv.config();
 const router = express.Router();
-
-const conn = mysql.createConnection({
-    host:config.db_connection.host,
-    user:config.db_connection.username,
-    password:config.db_connection.password,
-    database:config.db_connection.db_name
-});
-
 const secretKey = process.env.JWT_SECRET;
 
-router.get('/getToken', async (req, res) => {
-    try {
-        const results = await conn.query("SELECT * FROM api_users");
-        console.log(results);
-        res.json(results); // پاسخ مناسب به کاربر ارسال می‌شود
-    } catch (error) {
-        res.status(500).json({ error: 'Database error' });
-    }
+const conn = mysql.createConnection({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
 });
 
+conn.connect(function (err) {
+  if (err) {
+    console.log("There are some error : " + err);
+    return false;
+  }else{
+    console.log("database is connected");
+  }
+});
+
+router.post("/login", async (req, res) => {
+  const {username,password}=req.body;
+  const passwordHashed = md5(password);
+  const users = [{ id: 1, username: 'user1', password: 'password' }];
+  var token = '';
+  try {
+    const user = conn.query(`SELECT * FROM api_users where username = '${username}' AND password = '${passwordHashed}'`,(err,result)=>{
+        if(err){
+            res.json({
+              "success":"false",
+              "data":err
+            });
+            return false;
+        }
+        if(result[0]){
+          token=jwt.sign({id:result[0].id,username:result[0].username},process.env.JWT_SECRET, { expiresIn: '1h' });
+          res.json({
+            "success":"true",
+            "token":token
+          });          
+        }else{
+          res.json({
+            "success":"false",
+            "data":"User not found Check the input information"
+          })
+        }
+    });
+   
+    
+  } catch (error) {
+    res.status(500).json({ error: "Database error" });
+  }
+});
+
+
+
 export default router;
+ 

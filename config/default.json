@@ -1,8 +1,8 @@
 {
-    "db_connection":{
-        "host":"localhost",
-        "username":"root",
-        "password":"",
-        "db_name":"neuronPlus"
-    }
+
+        "DB_USER":"root",
+        "DB_PASSWORD":"",
+        "DB_HOST":"localhost",
+        "DB_NAME":"neuronplus"
+    
 }

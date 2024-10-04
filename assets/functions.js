@@ -1,7 +1,15 @@
 import crypto from 'crypto';
 import md5 from 'md5';
 
-export default function generateSecretKey(length=64){
+export function generateSecretKey(length=64){
     console.log(crypto.randomBytes(length).toString('hex'));
 };
 generateSecretKey();
+
+export function getToday(){
+    const today = new Date();
+    const day = String(today.getDate()).padStart(2, '0');    
+    const month = String(today.getMonth() + 1).padStart(2, '0'); 
+    const year = today.getFullYear();
+    return `${year}-${month}-${day}`;
+}

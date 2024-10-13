@@ -105,12 +105,15 @@ router.post("/add", (req, res) => {
 
   jwt.verify(token.split(" ")[1], process.env.JWT_SECRET, (err, decode) => {
     if (err) {
-      res.json({
+      res.status(400).json({
         success: "false",
         data: "The token is incorrect",
       });
       return false;
     }
+    
+    const refer_to = decode.id;
+
     if (!req.body.title) {
       res.json({
         success: "false",
@@ -136,8 +139,8 @@ router.post("/add", (req, res) => {
     const today = getToday();
 
     conn.query(
-      `INSERT INTO roles(title,status,type,description,created_at,updated_at)
-        VALUES('${req.body.title}','${req.body.status}','${req.body.type}','${req.body.description}','${today}','${today}')`,
+      `INSERT INTO roles(title,status,type,description,refer_to,created_at,updated_at)
+        VALUES('${req.body.title}','${req.body.status}','${req.body.type}','${req.body.description}','${refer_to}','${today}','${today}')`,
       (err, result) => {
         if (err) {
           res.json({

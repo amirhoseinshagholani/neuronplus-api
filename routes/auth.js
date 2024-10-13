@@ -25,12 +25,12 @@ conn.connect(function (err) {
 });
 
 router.post("/login", async (req, res) => {
-  const {username,password}=req.body;
+  const {mellicode,password}=req.body;
   const passwordHashed = md5(password);
-  const users = [{ id: 1, username: 'user1', password: 'password' }];
+    
   var token = '';
   try {
-    const user = conn.query(`SELECT * FROM api_users where username = '${username}' AND password = '${passwordHashed}'`,(err,result)=>{
+    const user = conn.query(`SELECT * FROM users where melliCode = '${mellicode}' AND password = '${passwordHashed}'`,(err,result)=>{
         if(err){
             res.json({
               "success":"false",
@@ -38,8 +38,9 @@ router.post("/login", async (req, res) => {
             });
             return false;
         }
+
         if(result[0]){
-          token=jwt.sign({id:result[0].id,username:result[0].username},process.env.JWT_SECRET, { expiresIn: '1h' });
+          token=jwt.sign({id:result[0].id,mellicode:result[0].mellicode},process.env.JWT_SECRET, { expiresIn: '24h' });
           res.json({
             "success":"true",
             "token":token
@@ -57,8 +58,6 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ error: "Database error" });
   }
 });
-
-
 
 export default router;
  

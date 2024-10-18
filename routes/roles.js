@@ -1,6 +1,5 @@
 import express, { json } from "express";
 import mysql from "mysql2";
-import config from "config";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import { getToday } from "../assets/functions.js";

@@ -43,7 +43,10 @@ router.post("/login", async (req, res) => {
           token=jwt.sign({id:result[0].id,mellicode:result[0].mellicode},process.env.JWT_SECRET, { expiresIn: '24h' });
           res.json({
             "success":"true",
-            "token":token
+            "data":{
+              "userId":result[0].id,
+              "token":token
+            }
           });          
         }else{
           res.json({

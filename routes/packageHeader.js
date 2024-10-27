@@ -32,19 +32,27 @@ router.get("/get/all", (req, res) => {
       });
       return false;
     }
-    conn.query("SELECT * FROM categories", (err, result) => {
-      if (err) {
+
+    conn.query(
+      `
+      SELECT packagesHeader.*, categories.title AS category_title 
+      FROM packagesHeader
+      INNER JOIN categories ON packagesHeader.cat_id = categories.id
+    `,
+      (err, result) => {
+        if (err) {
+          res.json({
+            success: "false",
+            data: "There is a problem with the database",
+          });
+          return;
+        }
         res.json({
-          success: "false",
-          data: "There is a problem with the database",
+          success: "true",
+          data: result,
         });
-        return;
       }
-      res.json({
-        success: "true",
-        data: result,
-      });
-    });
+    );
   });
 });
 
@@ -70,6 +78,13 @@ router.post("/add", (req, res) => {
 
     const refer_to = decode.id;
 
+    if (!req.body.cat_id) {
+      res.json({
+        success: "false",
+        data: "category is required",
+      });
+      return false;
+    }
     if (!req.body.title) {
       res.json({
         success: "false",
@@ -77,10 +92,17 @@ router.post("/add", (req, res) => {
       });
       return false;
     }
-    if (!req.body.status) {
+    if (!req.body.slug) {
       res.json({
         success: "false",
-        data: "status is required",
+        data: "slug is required",
+      });
+      return false;
+    }
+    if (!req.body.price) {
+      res.json({
+        success: "false",
+        data: "price is required",
       });
       return false;
     }
@@ -95,8 +117,8 @@ router.post("/add", (req, res) => {
     const today = getToday();
 
     conn.query(
-      `INSERT INTO categories(title,slug,status,cover,description,refer_to,created_at,updated_at)
-          VALUES('${req.body.title}','${req.body.slug}','${req.body.status}','${req.body.cover}','${req.body.description}','${refer_to}','${today}','${today}')`,
+      `INSERT INTO packagesHeader(cat_id,title,slug,price,cover,description,status,refer_to,created_at,updated_at)
+          VALUES('${req.body.cat_id}','${req.body.title}','${req.body.slug}','${req.body.price}','${req.body.cover}','${req.body.description}','${req.body.status}','${refer_to}','${today}','${today}')`,
       (err, result) => {
         if (err) {
           res.json({
@@ -107,7 +129,7 @@ router.post("/add", (req, res) => {
         }
         res.json({
           success: "true",
-          data: "The category was inserted successfully",
+          data: "The packageHeader was inserted successfully",
         });
       }
     );

@@ -7,7 +7,7 @@ import catApi from './routes/categoeries.js';
 import packageApi from './routes/packageHeader.js';
 import teachApi from './routes/teaching.js';
 import workSheetApi from './routes/worksheet.js';
-import customersApi from './routes/customers.js';
+import studentsApi from './routes/students.js';
 
 import cors from 'cors';
 const app = express();
@@ -23,7 +23,7 @@ app.use('/neuronplus/api/categories',catApi);
 app.use('/neuronplus/api/packageHeader',packageApi);
 app.use('/neuronplus/api/teaching',teachApi);
 app.use('/neuronplus/api/workSheet',workSheetApi);
-app.use('/neuronplus/api/customers',customersApi);
+app.use('/neuronplus/api/students',studentsApi);
 
 app.listen(8000,()=>console.log("It's running on port:8000"));
    

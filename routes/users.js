@@ -32,7 +32,7 @@ router.get("/get/all", (req, res) => {
       });
       return false;
     }
-    conn.query("SELECT * FROM users", (err, result) => {
+    conn.query("SELECT * FROM users order by id desc", (err, result) => {
       if (err) {
         res.json({
           success: "false",

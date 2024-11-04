@@ -32,7 +32,7 @@ router.get("/get/all", (req, res) => {
       });
       return false;
     }
-    conn.query("SELECT * FROM customers", (err, result) => {
+    conn.query("SELECT * FROM students order by id desc", (err, result) => {
       if (err) {
         res.json({
           success: "false",
@@ -142,7 +142,7 @@ router.post("/addSelf", (req, res) => {
   const hashedPassword = md5(req.body.password);
 
   conn.query(
-    `INSERT INTO customers(firstName,lastName,mobile,phone,melliCode,status,state,city,address,password,description,refer_to,created_at,updated_at)
+    `INSERT INTO students(firstName,lastName,mobile,phone,melliCode,status,state,city,address,password,description,refer_to,created_at,updated_at)
           VALUES('${req.body.firstName}','${req.body.lastName}','${req.body.mobile}','${req.body.phone}','${req.body.melliCode}','1','${req.body.state}','${req.body.city}','${req.body.address}','${hashedPassword}','${req.body.description}','1','${today}','${today}')`,
     (err, result) => {
       if (err) {
@@ -154,10 +154,92 @@ router.post("/addSelf", (req, res) => {
       }
       res.json({
         success: "true",
-        data: "The customer was inserted successfully",
+        data: "The student was inserted successfully",
       });
     }
   );
+});
+
+router.post("/add", (req, res) => {
+  if (!req.headers["authorization"]) {
+    res.json({
+      success: "false",
+      data: "Token is required",
+    });
+    return false;
+  }
+
+  const token = req.headers["authorization"];
+
+  jwt.verify(token.split(" ")[1], process.env.JWT_SECRET, (err, decode) => {
+    if (err) {
+      res.status(400).json({
+        success: "false",
+        data: "The token is incorrect",
+      });
+      return false;
+    }
+    
+    const refer_to = decode.id;
+
+    if (!req.body.firstName) {
+      res.json({
+        success: "false",
+        data: "firstName is required",
+      });
+      return false;
+    }
+    if (!req.body.lastName) {
+      res.json({
+        success: "false",
+        data: "lastName is required",
+      });
+      return false;
+    }
+    if (!req.body.mobile) {
+      res.json({
+        success: "false",
+        data: "mobile is required",
+      });
+      return false;
+    }
+    if (!req.body.melliCode) {
+      res.json({
+        success: "false",
+        data: "melliCode is required",
+      });
+      return false;
+    }
+    if (!req.body.password) {
+      res.json({
+        success: "false",
+        data: "password is required",
+      });
+      return false;
+    }
+
+    const today = getToday();
+    const hashedPassword = md5(req.body.password);
+    
+    conn.query(
+      `INSERT INTO students(firstName,lastName,mobile,phone,melliCode,status,state,city,address,password,description,refer_to,created_at,updated_at)
+            VALUES('${req.body.firstName}','${req.body.lastName}','${req.body.mobile}','${req.body.phone || null}','${req.body.melliCode}','${req.body.status}','${req.body.state || null}','${req.body.city || null}','${req.body.address || null}','${hashedPassword}','${req.body.description}','1','${today}','${today}')`,
+      (err, result) => {
+        if (err) {
+          res.json({
+            success: "false",
+            data: err,
+          });
+          return false;
+        }
+        res.json({
+          success: "true",
+          data: "The student was inserted successfully",
+        });
+      }
+    );
+
+  });
 });
 
 export default router;

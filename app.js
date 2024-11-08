@@ -8,6 +8,7 @@ import packageApi from './routes/packageHeader.js';
 import teachApi from './routes/teaching.js';
 import workSheetApi from './routes/worksheet.js';
 import studentsApi from './routes/students.js';
+import homeApi from './routes/home.js';
 
 import cors from 'cors';
 const app = express();
@@ -24,6 +25,7 @@ app.use('/neuronplus/api/packageHeader',packageApi);
 app.use('/neuronplus/api/teaching',teachApi);
 app.use('/neuronplus/api/workSheet',workSheetApi);
 app.use('/neuronplus/api/students',studentsApi);
+app.use('/neuronplus/api/home',homeApi);
 
 app.listen(8000,()=>console.log("It's running on port:8000"));
    

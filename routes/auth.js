@@ -25,41 +25,75 @@ conn.connect(function (err) {
 });
 
 router.post("/login", async (req, res) => {
-  const {mellicode,password}=req.body;
+  const {mellicode,password,is_student}=req.body;
   const passwordHashed = md5(password);
-    
+
   var token = '';
-  try {
-    const user = conn.query(`SELECT * FROM users where melliCode = '${mellicode}' AND password = '${passwordHashed}'`,(err,result)=>{
-        if(err){
+
+  if(!is_student){
+    try {
+      const user = conn.query(`SELECT * FROM users where melliCode = '${mellicode}' AND password = '${passwordHashed}'`,(err,result)=>{
+          if(err){
+              res.json({
+                "success":"false",
+                "data":err
+              });
+              return false;
+          }
+  
+          if(result[0]){
+            token=jwt.sign({id:result[0].id,mellicode:result[0].mellicode},process.env.JWT_SECRET, { expiresIn: '24h' });
+            res.json({
+              "success":"true",
+              "data":{
+                "userId":result[0].id,
+                "tokenType":"user",
+                "token":token
+              }
+            });          
+          }else{
             res.json({
               "success":"false",
-              "data":err
-            });
-            return false;
-        }
-
-        if(result[0]){
-          token=jwt.sign({id:result[0].id,mellicode:result[0].mellicode},process.env.JWT_SECRET, { expiresIn: '24h' });
-          res.json({
-            "success":"true",
-            "data":{
-              "userId":result[0].id,
-              "token":token
-            }
-          });          
-        }else{
-          res.json({
-            "success":"false",
-            "data":"User not found Check the input information"
-          })
-        }
-    });
-   
-    
-  } catch (error) {
-    res.status(500).json({ error: "Database error" });
+              "data":"User not found Check the input information"
+            })
+          }
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Database error" });
+    }
+  }else{
+    try {
+      const user = conn.query(`SELECT * FROM students where melliCode = '${mellicode}' AND password = '${passwordHashed}'`,(err,result)=>{
+          if(err){
+              res.json({
+                "success":"false",
+                "data":err
+              });
+              return false;
+          }
+  
+          if(result[0]){
+            token=jwt.sign({id:result[0].id,mellicode:result[0].mellicode},process.env.JWT_SECRET, { expiresIn: '24h' });
+            res.json({
+              "success":"true",
+              "data":{
+                "studentId":result[0].id,
+                "tokenType":"student",
+                "token":token
+              }
+            });          
+          }else{
+            res.json({
+              "success":"false",
+              "data":"Student not found Check the input information"
+            })
+          }
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Database error" });
+    }
   }
+
 });
 
 export default router;

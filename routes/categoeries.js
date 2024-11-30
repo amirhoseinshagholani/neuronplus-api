@@ -94,8 +94,24 @@ router.post("/add", (req, res) => {
 
     if (!req.body.video) {
       res.json({
-        success: "false",
+        success: "false", 
         data: "video is required",
+      });
+      return false;
+    }
+
+    if (!req.body.comment) {
+      res.json({
+        success: "false", 
+        data: "comment is required",
+      });
+      return false;
+    }
+
+    if (!req.body.description) {
+      res.json({
+        success: "false", 
+        data: "description is required",
       });
       return false;
     }
@@ -103,8 +119,8 @@ router.post("/add", (req, res) => {
     const today = getToday();
 
     conn.query(
-      `INSERT INTO categories(title,status,cover,video,description,refer_to,created_at,updated_at)
-          VALUES('${req.body.title}','${req.body.status}','${req.body.cover}','${req.body.video}','${req.body.description}','${refer_to}','${today}','${today}')`,
+      `INSERT INTO categories(title,status,cover,video,comment,description,refer_to,created_at,updated_at)
+          VALUES('${req.body.title}','${req.body.status}','${req.body.cover}','${req.body.video}','${req.body.comment}','${req.body.description}','${refer_to}','${today}','${today}')`,
       (err, result) => {
         if (err) {
           res.json({

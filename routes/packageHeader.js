@@ -178,12 +178,19 @@ router.post("/add", (req, res) => {
       });
       return false;
     }
+    if (!req.body.teacher) {
+      res.json({
+        success: "false",
+        data: "teacher is required",
+      });
+      return false;
+    }
 
     const today = getToday();
 
     conn.query(
-      `INSERT INTO packagesHeader(cat_id,title,price,discount_price,cover,video,description,status,refer_to,created_at,updated_at,comment)
-          VALUES('${req.body.cat_id}','${req.body.title}','${req.body.price}','${req.body.discount_price}','${req.body.cover}','${req.body.video}','${req.body.description}','${req.body.status}','${refer_to}','${today}','${today}','${req.body.comment}')`,
+      `INSERT INTO packagesHeader(cat_id,title,price,discount_price,cover,video,description,status,refer_to,created_at,updated_at,comment,teacher)
+          VALUES('${req.body.cat_id}','${req.body.title}','${req.body.price}','${req.body.discount_price}','${req.body.cover}','${req.body.video}','${req.body.description}','${req.body.status}','${refer_to}','${today}','${today}','${req.body.comment}','${req.body.teacher}')`,
       (err, result) => {
         if (err) {
           res.json({

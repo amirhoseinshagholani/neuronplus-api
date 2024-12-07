@@ -150,4 +150,50 @@ router.get("/worksheets/get", (req, res) => {
   });
 });
 
+router.post("/message/send", (req, res) => {
+
+  if (!req.body.subject) {
+    res.json({
+      success: "false",
+      data: "subject is required",
+    });
+    return false;
+  }
+  if (!req.body.email) {
+    res.json({
+      success: "false",
+      data: "phone is required",
+    });
+    return false;
+  }
+  if (!req.body.description) {
+    res.json({
+      success: "false",
+      data: "description is required",
+    });
+    return false;
+  }
+
+  const today = getToday();
+
+  conn.query(
+    `INSERT INTO messages(subject,email,description,created_at,updated_at)
+      VALUES('${req.body.subject}','${req.body.email}','${req.body.description}','${today}','${today}')`,
+    (err, result) => {
+      if (err) {
+        res.status(400).json({
+          success: "false",
+          data: err,
+        });
+        return false;
+      }
+      res.status(200).json({
+        success: "true",
+        data: "The message was inserted successfully",
+      });
+    }
+  );
+});
+
+
 export default router;

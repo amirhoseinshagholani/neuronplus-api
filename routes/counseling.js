@@ -277,4 +277,64 @@ router.put("/rejectRequest", (req, res) => {
   });
 });
 
+router.put("/waitingRequest", (req, res) => {
+  if (!req.headers["authorization"]) {
+    res.json({
+      success: "false",
+      data: "Token is required",
+    });
+    return false;
+  }
+
+  if (!req.body.id) {
+    res.json({
+      success: "false",
+      data: "id is required",
+    });
+    return false;
+  }
+
+  const token = req.headers["authorization"];
+  const id = req.body.id;
+  const today = getToday();
+
+  jwt.verify(token.split(" ")[1], process.env.JWT_SECRET, (err, decode) => {
+    if (err) {
+      res.json({
+        success: "false",
+        data: err,
+      });
+      return false;
+    }
+    conn.query(
+      `UPDATE counseling SET status = ? WHERE id = ?`,
+      [
+        '0',
+        id,
+      ],
+      (err, result) => {
+        if (err) {
+          res.json({
+            success: "false",
+            data: err,
+          });
+          return;
+        }
+
+        if (result.affectedRows) {
+          res.json({
+            success: "true",
+            data: "The counseling was updated successfully",
+          });
+        } else {
+          res.json({
+            success: "true",
+            data: "Request not found",
+          });
+        }
+      }
+    );
+  });
+});
+
 export default router;

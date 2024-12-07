@@ -79,7 +79,8 @@ router.post("/login", async (req, res) => {
               "data":{
                 "studentId":result[0].id,
                 "tokenType":"student",
-                "token":token
+                "token":token,
+                "status":result[0].status
               }
             });          
           }else{

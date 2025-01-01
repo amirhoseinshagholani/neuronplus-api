@@ -14,6 +14,8 @@ import orderApi from './routes/orders.js';
 import counselingAPI from './routes/counseling.js';
 import messageAPI from './routes/messages.js';
 import eventAPI from './routes/events.js';
+import ticketAPI from './routes/tickets.js';
+import ticketDetails from './routes/ticketDetails.js';
 
 import cors from 'cors';
 const app = express();
@@ -36,8 +38,8 @@ app.use('/neuronplus/api/orders',orderApi);
 app.use('/neuronplus/api/counseling',counselingAPI);
 app.use('/neuronplus/api/messages',messageAPI);
 app.use('/neuronplus/api/events',eventAPI);
-
-
+app.use('/neuronplus/api/tickets',ticketAPI);
+app.use('/neuronplus/api/ticketDetails',ticketDetails);
 
 app.listen(8000,()=>console.log("It's running on port:8000"));
    

@@ -83,10 +83,17 @@ router.get("/getDiscount", (req, res) => {
         });
         return;
       }
-      res.json({
-        success: "true",
-        data: result.length != 0 ? result : "Discount not found",
-      });
+      if(result.length != 0){
+        res.status(200).json({
+          success: "true",
+          data: result,
+        });
+      }else{
+        res.json({
+          success: "false",
+          data: "Discount not found",
+        });
+      }
     });
   });
 });

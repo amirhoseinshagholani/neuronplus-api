@@ -91,6 +91,44 @@ router.get("/getCounseling", (req, res) => {
   });
 });
 
+router.get("/getUserCounseling", (req, res) => {
+  if (!req.headers["authorization"]) {
+    res.json({
+      success: "false",
+      data: "Token is required",
+    });
+    return false;
+  }
+
+  const token = req.headers["authorization"];
+  
+  jwt.verify(token.split(" ")[1], process.env.JWT_SECRET, (err, decode) => {
+    if (err) {
+      res.json({
+        success: "false",
+        data: err,
+      });
+      return false;
+    }
+
+    const customer_id = decode.id;
+
+    conn.query(`SELECT * FROM counseling where customer_id='${customer_id}'`, (err, result) => {
+      if (err) {
+        res.json({
+          success: "false",
+          data: "There is a problem with the database",
+        });
+        return;
+      }
+      res.json({
+        success: "true",
+        data: result.length != 0 ? result : "Counseling not found",
+      });
+    });
+  });
+});
+
 router.post("/add", (req, res) => {
   if (!req.headers["authorization"]) {
     res.json({

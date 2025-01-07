@@ -32,19 +32,22 @@ router.get("/get/all", (req, res) => {
       });
       return false;
     }
-    conn.query("SELECT * FROM tickets", (err, result) => {
-      if (err) {
+    conn.query(
+      "SELECT tickets.*,students.firstName AS firstName,students.lastName AS lastName,packagesheader.title as packageTitle FROM tickets INNER JOIN students ON tickets.customer_id=students.id INNER JOIN packagesheader ON tickets.package_id=packagesheader.id",
+      (err, result) => {
+        if (err) {
+          res.json({
+            success: "false",
+            data: "There is a problem with the database",
+          });
+          return;
+        }
         res.json({
-          success: "false",
-          data: "There is a problem with the database",
+          success: "true",
+          data: result,
         });
-        return;
       }
-      res.json({
-        success: "true",
-        data: result,
-      });
-    });
+    );
   });
 });
 

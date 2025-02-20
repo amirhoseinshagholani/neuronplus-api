@@ -52,7 +52,7 @@ router.get("/getTicketDetailsWithTicketId", (req, res) => {
       }
       res.json({
         success: "true",
-        data: result.length != 0 ? result : "ticketDetails are Empty",
+        data: result
       });
     });
   });
@@ -123,6 +123,33 @@ router.post("/add", (req, res) => {
         });
       }
     );
+    if(req.body.answerType == "0"){
+     conn.query(
+          `UPDATE tickets SET status='1',updated_at='${today}' where id=${req.body.ticket_id}`,
+          (err, result) => {
+            if (err) {
+              res.json({
+                success: "false",
+                data: err,
+              });
+              return false;
+            }
+          }
+        );
+      }else{
+        conn.query(
+          `UPDATE tickets SET status='0',updated_at='${today}' where id=${req.body.ticket_id}`,
+          (err, result) => {
+            if (err) {
+              res.json({
+                success: "false",
+                data: err,
+              });
+              return false;
+            }
+          }
+        );
+      }
   });
 });
 

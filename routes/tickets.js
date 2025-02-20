@@ -88,7 +88,7 @@ router.get("/getOneTicket", (req, res) => {
       }
       res.json({
         success: "true",
-        data: result.length != 0 ? result : "Ticket not found",
+        data:  result,
       });
     });
   });
@@ -129,7 +129,7 @@ router.get("/getCustomerTickets", (req, res) => {
         }
         res.json({
           success: "true",
-          data: result.length != 0 ? result : "Tickets not found",
+          data:  result,
         });
       }
     );
@@ -205,6 +205,66 @@ router.post("/add", (req, res) => {
         res.json({
           success: "true",
           data: "The ticket was inserted successfully",
+        });
+      }
+    );
+  });
+});
+
+router.put("/toggleStatusTicket", (req, res) => {
+  
+  if (!req.headers["authorization"]) {
+    res.json({
+      success: "false",
+      data: "Token is required",
+    });
+    return false;
+  }
+
+  const token = req.headers["authorization"];
+
+  jwt.verify(token.split(" ")[1], process.env.JWT_SECRET, (err, decode) => {
+    if (err) {
+      res.status(400).json({
+        success: "false",
+        data: "The token is incorrect",
+      });
+      return false;
+    }
+
+    if (!req.body.ticket_id) {
+      res.json({
+        success: "false",
+        data: "ticket_id is required",
+      });
+      return false;
+    }
+
+    if (!req.body.status) {
+      res.status(403).json({
+        success: "false",
+        data: "status is required",
+      });
+      return false;
+    }
+
+    const ticket_id = req.body.ticket_id;
+    const today = getToday();
+    const status = req.body.status;
+
+    conn.query(
+      `UPDATE tickets SET status='${status}',updated_at='${today}' where id=${ticket_id}`,
+      (err, result) => {
+        if (err) {
+          res.json({
+            success: "false",
+            data: err,
+          });
+          return false;
+        }
+        res.json({
+          success: "true",
+          data: "The ticket was updated successfully",
         });
       }
     );

@@ -85,7 +85,7 @@ router.get("/getRole", (req, res) => {
       }
       res.json({
         success: "true",
-        data: result.length != 0 ? result : "Role not found",
+        data:  result,
       });
     });
   });

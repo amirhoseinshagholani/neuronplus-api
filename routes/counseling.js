@@ -85,7 +85,7 @@ router.get("/getCounseling", (req, res) => {
       }
       res.json({
         success: "true",
-        data: result.length != 0 ? result : "Counseling not found",
+        data: result,
       });
     });
   });
@@ -123,7 +123,7 @@ router.get("/getUserCounseling", (req, res) => {
       }
       res.json({
         success: "true",
-        data: result.length != 0 ? result : "Counseling not found",
+        data:  result,
       });
     });
   });

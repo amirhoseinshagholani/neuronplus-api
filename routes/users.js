@@ -95,7 +95,7 @@ router.get("/getUser", (req, res) => {
       }
       res.json({
         success: "true",
-        data: result.length != 0 ? result : "User not found",
+        data:  result ,
       });
     });
   });

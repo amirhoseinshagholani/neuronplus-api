@@ -80,7 +80,7 @@ router.get("/getStudent", (req, res) => {
       }
       res.json({
         success: "true",
-        data: result.length != 0 ? result : "Students not found",
+        data:  result,
       });
     });
   });

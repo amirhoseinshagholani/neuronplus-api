@@ -85,7 +85,7 @@ router.get("/getOrder", (req, res) => {
       }
       res.json({
         success: "true",
-        data: result.length != 0 ? result : "Order not found",
+        data:  result,
       });
     });
   });
@@ -121,7 +121,7 @@ router.get("/getMyOrders", (req, res) => {
       }
       res.json({
         success: "true",
-        data: result.length != 0 ? result : "Orders not found",
+        data: result,
       });
     });
   });

@@ -7,11 +7,14 @@ dotenv.config();
 
 const router = express.Router();
 
-const conn = mysql.createConnection({
+const conn = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
+  waitForConnections: true,  
+  connectionLimit: 100,   // تا ۱۰۰ اتصال همزمان
+  queueLimit: 500         // تا ۵۰۰ درخواست در صف بمانند
 });
 
 router.get("/get/all", (req, res) => {
@@ -111,7 +114,7 @@ router.get("/getMyOrders", (req, res) => {
       return false;
     }
     const customer_id = decode.id;
-    conn.query(`SELECT * FROM orders where customer_id='${customer_id}'`, (err, result) => {
+    conn.query(`SELECT * FROM orders where customer_id='${customer_id}' AND status=1`, (err, result) => {
       if (err) {
         res.json({
           success: "false",
@@ -164,7 +167,7 @@ router.get("/checkRegister", (req, res) => {
       });
       return false;
     }
-    conn.query(`SELECT * FROM orders where customer_id='${student_id}' AND package_id='${package_id}'`, (err, result) => {
+    conn.query(`SELECT * FROM orders where customer_id='${student_id}' AND package_id='${package_id}' AND status=1`, (err, result) => {
       if (err) {
         res.status(400).json({
           success: "false",
@@ -201,8 +204,8 @@ router.post("/add", (req, res) => {
     }
 
     const customer_id = decode.id;
-    const tracking_code = "0000000000";
-    const status = "1";
+    const tracking_code = Math.floor(Math.pow(10, 14) + Math.random() * 9 * Math.pow(10, 14));
+    const status = "2";
 
 
     if (!req.body.package_id) {
@@ -244,12 +247,72 @@ router.post("/add", (req, res) => {
         }
         res.json({
           success: "true",
+          tracking_code:tracking_code,
           data: "The order was inserted successfully",
         });
       }
     );
   });
 });
+
+router.post("/updateStatus", (req, res) => {
+  if (!req.headers["authorization"]) {
+    return res.status(400).json({ success: false, data: "Token is required" });
+  }
+
+  const token = req.headers["authorization"].split(" ")[1];
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, decode) => {
+    if (err) {
+      return res.status(400).json({ success: false, data: "The token is incorrect" });
+    }
+
+    if (!req.body.authority) {
+      return res.status(400).json({ success: false, data: "authority is required" });
+    }
+
+    if (!req.body.statusValue) {
+      return res.status(400).json({ success: false, data: "status is required" });
+    }
+
+    conn.query("UPDATE orders SET status = ? WHERE authority = ?", 
+      [req.body.statusValue, req.body.authority], 
+      (err, result) => {
+        if (err) {
+          console.error("❌ خطا در بروزرسانی:", err);
+          return res.status(500).json({ success: false, data: err });
+        }
+
+        if (result.affectedRows > 0) {
+          // 🔹 بعد از بروزرسانی، `tracking_code` را دریافت کن
+          conn.query("SELECT * FROM orders WHERE authority = ?", 
+            [req.body.authority], 
+            (err, rows) => {
+              if (err) {
+                console.error("❌ خطا در دریافت tracking_code:", err);
+                return res.status(500).json({ success: false, data: err });
+              }
+
+              if (rows.length > 0) {
+                return res.json({
+                  success: true,
+                  message: "Status updated successfully",
+                  tracking_code: rows[0].tracking_code,
+                  package_id: rows[0].package_id
+                });
+              } else {
+                return res.status(404).json({ success: false, data: "No record found" });
+              }
+          });
+
+        } else {
+          return res.status(404).json({ success: false, data: "No record found" });
+        }
+    });
+  });
+});
+
+
 
 
 export default router;

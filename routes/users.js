@@ -230,8 +230,8 @@ router.post("/add", (req, res) => {
     const hashedPassword = md5(req.body.password);
     
     conn.query(
-      `INSERT INTO users(role_id,firstName,lastName,mobile,phone,melliCode,status,state,city,address,password,description,refer_to,created_at,updated_at)
-            VALUES('${req.body.role_id}','${req.body.firstName}','${req.body.lastName}','${req.body.mobile}','${req.body.phone || null}','${req.body.melliCode}','${req.body.status}','${req.body.state || null}','${req.body.city || null}','${req.body.address || null}','${hashedPassword}','${req.body.description}','1','${today}','${today}')`,
+      `INSERT INTO users(role_id,firstName,lastName,mobile,phone,melliCode,status,state,city,address,password,description,refer_to,created_at,updated_at,partnership_percentage)
+            VALUES('${req.body.role_id}','${req.body.firstName}','${req.body.lastName}','${req.body.mobile}','${req.body.phone || null}','${req.body.melliCode}','${req.body.status}','${req.body.state || null}','${req.body.city || null}','${req.body.address || null}','${hashedPassword}','${req.body.description}','1','${today}','${today}','${req.body.partnership_percentage}')`,
       (err, result) => {
         if (err) {
           res.json({

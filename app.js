@@ -43,5 +43,5 @@ app.use('/neuronplus/api/tickets',ticketAPI);
 app.use('/neuronplus/api/ticketDetails',ticketDetails);
 app.use('/neuronplus/api/payment',paymentsApi);
 
-app.listen(8000,()=>console.log("It's running on port:8000"));
+app.listen(8000,()=>console.log("It's running"));
    

@@ -35,9 +35,9 @@ router.get("/get/all", (req, res) => {
 
     conn.query(
       `
-      SELECT packagesHeader.*, categories.title AS category_title 
-      FROM packagesHeader
-      INNER JOIN categories ON packagesHeader.cat_id = categories.id
+      SELECT packagesheader.*, categories.title AS category_title 
+      FROM packagesheader
+      INNER JOIN categories ON packagesheader.cat_id = categories.id
     `,
       (err, result) => {
         if (err) {
@@ -79,9 +79,9 @@ router.get("/getPackage", (req, res) => {
 
     conn.query(
       `
-      SELECT packagesHeader.*, categories.title AS category_title 
-      FROM packagesHeader
-      INNER JOIN categories ON packagesHeader.cat_id = categories.id WHERE packagesHeader.id=${package_id}
+      SELECT packagesheader.*, categories.title AS category_title 
+      FROM packagesheader
+      INNER JOIN categories ON packagesheader.cat_id = categories.id WHERE packagesheader.id=${package_id}
     `,
       (err, result) => {
         if (err) {
@@ -150,6 +150,7 @@ router.post("/add", (req, res) => {
       });
       return false;
     }
+
     if (!req.body.cover) {
       res.json({
         success: "false",
@@ -185,12 +186,22 @@ router.post("/add", (req, res) => {
       });
       return false;
     }
+    
+    var discount_price;
+    if (!req.body.discount_price) {
+        discount_price=0;
+    }
+    else
+    {
+        discount_price=req.body.discount_price;
+    }
+
 
     const today = getToday();
 
     conn.query(
-      `INSERT INTO packagesHeader(cat_id,title,price,discount_price,cover,video,description,status,refer_to,created_at,updated_at,comment,teacher)
-          VALUES('${req.body.cat_id}','${req.body.title}','${req.body.price}','${req.body.discount_price}','${req.body.cover}','${req.body.video}','${req.body.description}','${req.body.status}','${refer_to}','${today}','${today}','${req.body.comment}','${req.body.teacher}')`,
+      `INSERT INTO packagesheader(cat_id,title,price,discount_price,cover,video,description,status,refer_to,created_at,updated_at,comment,teacher)
+          VALUES('${req.body.cat_id}','${req.body.title}','${req.body.price}','${discount_price}','${req.body.cover}','${req.body.video}','${req.body.description}','${req.body.status}','${refer_to}','${today}','${today}','${req.body.comment}','${req.body.teacher}')`,
       (err, result) => {
         if (err) {
           res.json({

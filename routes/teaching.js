@@ -161,11 +161,25 @@ router.post("/add", (req, res) => {
       return false;
     }
 
+    var practice_file;
+    if(req.body.practice_file){
+      practice_file = req.body.practice_file;
+    }else{
+      practice_file = null;
+    }
+
+    var answer_sheet;
+    if(req.body.answer_sheet){
+      answer_sheet = req.body.answer_sheet
+    }else{
+      answer_sheet = null;
+    }
+
     const today = getToday();
 
     conn.query(
       `INSERT INTO teaching(package_id,status,free,title,cover,file,length,size,refer_to,description,created_at,updated_at,practice_file,answer_sheet)
-            VALUES('${req.body.package_id}','${req.body.status}','${req.body.free}','${req.body.title}','${req.body.cover}','${req.body.file}','${req.body.length}','${req.body.size}','${refer_to}','${req.body.description}','${today}','${today}','${req.body.practice_file}','${req.body.answer_sheet}')`,
+            VALUES('${req.body.package_id}','${req.body.status}','${req.body.free}','${req.body.title}','${req.body.cover}','${req.body.file}','${req.body.length}','${req.body.size}','${refer_to}','${req.body.description}','${today}','${today}','${practice_file}','${answer_sheet}')`,
       (err, result) => {
         if (err) {
           res.json({
